@@ -78,11 +78,11 @@ defmodule Plaid.Link do
 
     Plaidical.Application.http_client().request(:post, "/link/token/create", params)
     |> case do
-      {:ok, %Finch.Response{status: 200, body: response_body}} ->
-        IO.inspect response_body, label: "RESPONSE"
-        link_params = Jason.decode!(response_body)
-        IO.inspect link_params, label: "LINK_PARAMS"
-        {:ok, struct(Plaid.Link, link_params)}
+      {:ok, map} ->
+        {:ok, struct(Plaid.Link, map)}
+
+      {:error, message} ->
+        {:error, message}
     end
   end
 end
