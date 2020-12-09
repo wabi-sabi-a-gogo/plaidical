@@ -38,7 +38,7 @@ defmodule Plaidical.DefaultClient do
     response
     |> case do
       {:ok, %Finch.Response{status: 200, body: response_body}} ->
-        Jason.decode(response_body)
+        Jason.decode(response_body, keys: :atoms)
 
       {:error, error} ->
         {:error, Exception.message(error)}
