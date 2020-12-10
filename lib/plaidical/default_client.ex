@@ -1,8 +1,6 @@
 defmodule Plaidical.DefaultClient do
   @default_headers [{"Content-Type", "application/json"}]
 
-  # Finch.start_link(name: Plaidical.Charm)
-
   @spec request(atom, binary, [tuple], map) :: {:ok, map} | {:error, binary}
   def request(:post, url, headers, body) do
     body =
@@ -24,13 +22,13 @@ defmodule Plaidical.DefaultClient do
 
   defp default_body do
     %{
-      client_id: Application.get_env(:plaidical, :plaid)[:client_id],
-      secret: Application.get_env(:plaidical, :plaid)[:secret]
+      client_id: Application.get_env(:plaidical, :client_id),
+      secret: Application.get_env(:plaidical, :secret)
     }
   end
 
   defp plaid_host do
-    "#{Application.get_env(:plaidical, :plaid)[:env]}.plaid.com"
+    "#{Application.get_env(:plaidical, :env)}.plaid.com"
   end
 
   @spec process_response({:ok, Finch.Response.t()} | {:error, Mint.HTTPError.t() | Mint.TransportError.t()}) :: {:ok, map} | {:error, binary}
