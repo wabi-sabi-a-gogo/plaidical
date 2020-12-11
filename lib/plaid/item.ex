@@ -9,14 +9,14 @@ defmodule Plaid.Item do
             webhook: nil
 
   @type t :: %__MODULE__{
-    available_products: [String.t()],
-    billed_products: [String.t()],
-    consent_expiration_time: String.t(),
-    error: Plaid.Item.Error.t(),
-    institution_id: String.t(),
-    item_id: String.t(),
-    webhook: String.t()
-  }
+          available_products: [String.t()],
+          billed_products: [String.t()],
+          consent_expiration_time: String.t(),
+          error: Plaid.Item.Error.t(),
+          institution_id: String.t(),
+          item_id: String.t(),
+          webhook: String.t()
+        }
 
   defmodule Error do
     @derive Jason.Encoder
@@ -31,16 +31,16 @@ defmodule Plaid.Item do
               suggested_action: nil
 
     @type t :: %__MODULE__{
-      causes: [String.t()],
-      display_message: String.t(),
-      documentation_url: String.t(),
-      error_code: String.t(),
-      error_message: String.t(),
-      error_type: String.t(),
-      request_id: String.t(),
-      status: Integer.t(),
-      suggested_action: String.t()
-    }
+            causes: [String.t()],
+            display_message: String.t(),
+            documentation_url: String.t(),
+            error_code: String.t(),
+            error_message: String.t(),
+            error_type: String.t(),
+            request_id: String.t(),
+            status: Integer.t(),
+            suggested_action: String.t()
+          }
   end
 
   def get_info(access_token) do

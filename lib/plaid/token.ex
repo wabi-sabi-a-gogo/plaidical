@@ -5,8 +5,8 @@ defmodule Plaid.Token do
             request_id: nil
 
   @type t :: %__MODULE__{
-    access_token: String.t(),
-    item_id: String.t(),
-    request_id: String.t()
-  }
+          access_token: String.t(),
+          item_id: String.t(),
+          request_id: String.t()
+        }
 end

@@ -31,7 +31,10 @@ defmodule Plaidical.DefaultClient do
     "#{Application.get_env(:plaidical, :env)}.plaid.com"
   end
 
-  @spec process_response({:ok, Finch.Response.t()} | {:error, Mint.HTTPError.t() | Mint.TransportError.t()}) :: {:ok, map} | {:error, binary}
+  @spec process_response(
+          {:ok, Finch.Response.t()}
+          | {:error, Mint.HTTPError.t() | Mint.TransportError.t()}
+        ) :: {:ok, map} | {:error, binary}
   defp process_response(response) do
     response
     |> case do

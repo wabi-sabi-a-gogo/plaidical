@@ -7,10 +7,10 @@ defmodule Plaid.Balance do
             unofficial_currency_code: nil
 
   @type t :: %__MODULE__{
-    available: Decimal.t(),
-    current: Decimal.t(),
-    iso_currency_code: String.t(),
-    limit: Decimal.t(),
-    unofficial_currency_code: String.t()
-  }
+          available: Decimal.t(),
+          current: Decimal.t(),
+          iso_currency_code: String.t(),
+          limit: Decimal.t(),
+          unofficial_currency_code: String.t()
+        }
 end
