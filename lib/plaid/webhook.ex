@@ -1,4 +1,6 @@
 defmodule Plaid.Webhook do
+  alias JOSE.{JWK, JWT}
+
   @derive Jason.Encoder
   defstruct account_id: nil,
             asset_report_id: nil,
@@ -20,25 +22,25 @@ defmodule Plaid.Webhook do
             webhook_type: nil
 
   @type t :: %__MODULE__{
-    account_id: String.t(),
-    asset_report_id: String.t(),
-    canceled_investments_transactions: Integer.t(),
-    consent_expiration_time: String.t(),
-    error: String.t() | Plaid.Webhook.Error.t(),
-    item_id: String.t(),
-    new_holdings: Integer.t(),
-    new_investments_transactions: Integer.t(),
-    new_payment_status: String.t(),
-    new_transactions: Integer.t(),
-    new_webhook_url: String.t(),
-    old_payment_status: String.t(),
-    payment_id: String.t(),
-    removed_transactions: [String.t()],
-    timestamp: String.t(),
-    updated_holdings: Integer.t(),
-    webhook_code: String.t(),
-    webhook_type: String.t()
-  }
+          account_id: String.t(),
+          asset_report_id: String.t(),
+          canceled_investments_transactions: Integer.t(),
+          consent_expiration_time: String.t(),
+          error: String.t() | Plaid.Webhook.Error.t(),
+          item_id: String.t(),
+          new_holdings: Integer.t(),
+          new_investments_transactions: Integer.t(),
+          new_payment_status: String.t(),
+          new_transactions: Integer.t(),
+          new_webhook_url: String.t(),
+          old_payment_status: String.t(),
+          payment_id: String.t(),
+          removed_transactions: [String.t()],
+          timestamp: String.t(),
+          updated_holdings: Integer.t(),
+          webhook_code: String.t(),
+          webhook_type: String.t()
+        }
 
   defmodule Error do
     @derive Jason.Encoder
@@ -53,16 +55,16 @@ defmodule Plaid.Webhook do
               suggested_action: nil
 
     @type t :: %__MODULE__{
-      causes: [String.t()],
-      display_message: String.t(),
-      documentation_url: String.t(),
-      error_code: String.t(),
-      error_message: String.t(),
-      error_type: String.t(),
-      request_id: String.t(),
-      status: String.t(),
-      suggested_action: String.t()
-    }
+            causes: [String.t()],
+            display_message: String.t(),
+            documentation_url: String.t(),
+            error_code: String.t(),
+            error_message: String.t(),
+            error_type: String.t(),
+            request_id: String.t(),
+            status: String.t(),
+            suggested_action: String.t()
+          }
   end
 
   defmodule VerificationKey do
@@ -111,6 +113,48 @@ defmodule Plaid.Webhook do
 
       {:error, message} ->
         {:error, message}
+    end
+  end
+
+  @spec verify_webhook(binary, binary) :: boolean | {:error, Atom.t()}
+  def verify_webhook(verification_header, body) do
+    with {:ok, key_id} <- get_key_id(verification_header),
+         {:ok, key} <- get_verification_key(key_id),
+         {:ok, claims} <- verify_claims(key, verification_header) do
+      body == claims["request_body_sha256"]
+    else
+      _ ->
+        {:error, :invalid_verification_header}
+    end
+  end
+
+  @spec get_key_id(binary) :: {:ok, binary} | {:error, Atom.t()}
+  defp get_key_id(verification_header) do
+    case String.split(verification_header, ".") do
+      [protected, _, _] ->
+        with {:ok, decoded_header} <- Base.url_decode64(protected, padding: false),
+             {:ok, header} <- Jason.decode(decoded_header) do
+          %{"kid" => key_id} = header
+          {:ok, key_id}
+        else
+          _ ->
+            {:error, :malformed_verification_header}
+        end
+
+      _ ->
+        {:error, :malformed_verification_header}
+    end
+  end
+
+  defp verify_claims(key, token) do
+    JWK.from_map(key)
+    |> JWT.verify_strict(["ES256"], token)
+    |> case do
+      {true, %JWT{fields: claims}, _} ->
+        {:ok, claims}
+
+      _ ->
+        {:error, :invalid_signature}
     end
   end
 end
