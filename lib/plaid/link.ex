@@ -72,10 +72,15 @@ defmodule Plaid.Link do
     end
   end
 
-  @spec create_link_token(Plaid.Link.Params.t()) :: {:ok, Plaid.Link.t()} | {:error, binary}
-  def create_link_token(params) do
-    params = Map.from_struct(params)
+  @spec create_link_token(Plaid.Link.Params.t() | map) :: {:ok, Plaid.Link.t()} | {:error, binary}
+  def create_link_token(params) when is_struct(params, Plaid.Link.Params) do
+    Map.from_struct(params)
+    |> do_create_link_token()
+  end
 
+  def create_link_token(params), do: do_create_link_token(params)
+
+  defp do_create_link_token(params) do
     Plaidical.Application.http_client().request(:post, "/link/token/create", params)
     |> case do
       {:ok, map} ->
