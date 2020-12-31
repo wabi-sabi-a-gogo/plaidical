@@ -116,12 +116,16 @@ defmodule Plaid.Webhook do
     end
   end
 
-  @spec verify_webhook(binary, binary) :: boolean | {:error, Atom.t()}
+  @spec verify_webhook(binary, binary) :: {:ok, binary} | {:error, Atom.t()}
   def verify_webhook(verification_header, body) do
     with {:ok, key_id} <- get_key_id(verification_header),
          {:ok, key} <- get_verification_key(key_id),
          {:ok, claims} <- verify_claims(key, verification_header) do
-      body == claims["request_body_sha256"]
+      if body == claims["request_body_sha256"] do
+        {:ok, body}
+      else
+        {:error, :invalid_body_match}
+      end
     else
       _ ->
         {:error, :invalid_verification_header}
