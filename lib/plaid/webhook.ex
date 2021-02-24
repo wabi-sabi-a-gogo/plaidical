@@ -121,7 +121,7 @@ defmodule Plaid.Webhook do
     with {:ok, key_id} <- get_key_id(verification_header),
          {:ok, key} <- get_verification_key(key_id),
          {:ok, claims} <- verify_claims(key, verification_header) do
-      if body == claims["request_body_sha256"] do
+      if hash(body) == claims["request_body_sha256"] do
         {:ok, body}
       else
         {:error, :invalid_body_match}
@@ -148,6 +148,13 @@ defmodule Plaid.Webhook do
       _ ->
         {:error, :malformed_verification_header}
     end
+  end
+
+  @spec hash(String.t()) :: String.t()
+  defp hash(content) do
+    :crypto.hash(:sha256, content)
+    |> Base.encode16()
+    |> String.downcase()
   end
 
   defp verify_claims(key, token) do
