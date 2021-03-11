@@ -64,7 +64,8 @@ defmodule Plaid.Account do
     end
   end
 
-  @spec get_balance(binary, Plaid.Balance.Options | map) :: {:ok, [Plaid.Account.t()]} | {:error, binary}
+  @spec get_balance(binary, Plaid.Balance.Options | map) ::
+          {:ok, [Plaid.Account.t()]} | {:error, binary}
   def get_balance(access_token, options) when is_struct(options, Plaid.Account.Balance.Options) do
     Map.from_struct(options)
     |> Map.merge(%{
@@ -74,10 +75,10 @@ defmodule Plaid.Account do
   end
 
   def get_balance(access_token, options) do
-    %{
-      options
-      | access_token: access_token
-    }
+    options
+    |> Map.merge(%{
+      access_token: access_token
+    })
     |> do_get_balance()
   end
 
