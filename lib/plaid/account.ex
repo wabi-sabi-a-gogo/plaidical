@@ -66,20 +66,23 @@ defmodule Plaid.Account do
 
   @spec get_balance(binary, Plaid.Balance.Options | map) ::
           {:ok, [Plaid.Account.t()]} | {:error, binary}
-  def get_balance(access_token, options) when is_struct(options, Plaid.Account.Balance.Options) do
-    Map.from_struct(options)
-    |> Map.merge(%{
-      access_token: access_token
-    })
+  def get_balance(access_token, %{options: options})
+      when is_struct(options, Plaid.Account.Balance.Options) do
+    get_balance(access_token, %{options: Map.from_struct(options)})
+  end
+
+  def get_balance(access_token, %{options: _} = options) do
+    options
+    |> Map.merge(%{access_token: access_token})
     |> do_get_balance()
   end
 
+  def get_balance(access_token, options) when is_struct(options, Plaid.Account.Balance.Options) do
+    get_balance(access_token, %{options: Map.from_struct(options)})
+  end
+
   def get_balance(access_token, options) do
-    options
-    |> Map.merge(%{
-      access_token: access_token
-    })
-    |> do_get_balance()
+    get_balance(access_token, %{options: options})
   end
 
   defp do_get_balance(params) do
