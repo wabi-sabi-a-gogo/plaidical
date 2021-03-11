@@ -42,6 +42,19 @@ defmodule Plaid.Account do
               account_ids: [String.t()]
             }
     end
+
+    defmodule Response do
+      @derive Jason.Encoder
+      defstruct accounts: nil,
+                item: nil,
+                request_id: nil
+
+      @type t :: %__MODULE__{
+              accounts: [Plaid.Account.t()],
+              item: Plaid.Item.t(),
+              request_id: String.t()
+            }
+    end
   end
 
   def get_account(account_id, access_token) do
@@ -89,7 +102,7 @@ defmodule Plaid.Account do
     Plaidical.Application.http_client().request(:post, "/accounts/balance/get", params)
     |> case do
       {:ok, map} ->
-        {:ok, struct(Plaid.Link, map)}
+        {:ok, struct(Plaid.Account.Balance.Response, map)}
 
       {:error, message} ->
         {:error, message}
