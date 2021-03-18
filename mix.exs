@@ -23,7 +23,7 @@ defmodule Plaidical.MixProject do
     [
       {:jason, "~> 1.2"},
       {:finch, "~> 0.6.0"},
-      {:jose, "~> 1.11"}
+      {:jose, "1.10.1"}
     ]
   end
 end

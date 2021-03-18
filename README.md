@@ -1,21 +1,14 @@
 # Plaidical
 
-**TODO: Add description**
+NOTE: This is a fork of https://github.com/wabi-sabi-a-gogo/plaidical so that Earnnest can maintin more control if upstream changes are not desirable.
 
 ## Installation
-
-If [available in Hex](https://hex.pm/docs/publish), the package can be installed
-by adding `plaidical` to your list of dependencies in `mix.exs`:
 
 ```elixir
 def deps do
   [
-    {:plaidical, "~> 0.1.0"}
+    {:plaidical,
+       git: "https://github.com/earnnest-greenville/plaidical.git", branch: "master", runtime: false}
   ]
 end
 ```
-
-Documentation can be generated with [ExDoc](https://github.com/elixir-lang/ex_doc)
-and published on [HexDocs](https://hexdocs.pm). Once published, the docs can
-be found at [https://hexdocs.pm/plaidical](https://hexdocs.pm/plaidical).
-
