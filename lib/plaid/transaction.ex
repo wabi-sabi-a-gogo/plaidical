@@ -44,6 +44,57 @@ defmodule Plaid.Transaction do
           transaction_id: String.t(),
           transaction_code: String.t(),
           transaction_type: String.t()
-  }
-end
+        }
 
+  defmodule Options do
+    @derive Jason.Encoder
+    defstruct account_ids: nil,
+              count: nil,
+              offset: nil
+
+    @type t :: %__MODULE__{
+            account_ids: [String.t()],
+            count: Integer.t(),
+            offset: Integer.t()
+          }
+  end
+
+  defmodule Response do
+    @derive Jason.Encoder
+    defstruct accounts: nil,
+              transactions: nil,
+              item: nil,
+              total_transactions: nil,
+              request_id: nil
+
+    @type t :: %__MODULE__{
+            accounts: [Plaid.Account.t()],
+            transactions: [Plaid.Transaction.t()],
+            item: Plaid.Item.t(),
+            total_transactions: Integer.t(),
+            request_id: String.t()
+          }
+  end
+
+  @spec get_transactions(binary, Plaid.Balance.Options | map) ::
+          {:ok, Plaid.Transaction.Response.t()} | {:error, binary}
+  def get_transactions(access_token, %{options: options})
+      when is_struct(options, Plaid.Transaction.Options) do
+    get_transactions(access_token, %{options: Map.from_struct(options)})
+  end
+
+  def get_transactions(access_token, %{options: _} = options) do
+    params =
+      options
+      |> Map.merge(%{access_token: access_token})
+
+    Plaidical.Application.http_client().request(:post, "/transactions/get", params)
+    |> case do
+      {:ok, map} ->
+        {:ok, struct(Plaid.Transaction.Response, map)}
+
+      {:error, _} = error ->
+        error
+    end
+  end
+end

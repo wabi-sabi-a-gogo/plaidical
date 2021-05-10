@@ -34,4 +34,3 @@ defmodule Plaid.Category do
     end
   end
 end
-

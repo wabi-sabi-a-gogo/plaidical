@@ -17,6 +17,5 @@ defmodule Plaid.PaymentMeta do
           payment_method: String.t(),
           payment_processor: String.t(),
           reason: String.t()
-  }
+        }
 end
-

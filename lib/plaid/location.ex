@@ -19,4 +19,3 @@ defmodule Plaid.Location do
           store_number: String.t()
         }
 end
-
