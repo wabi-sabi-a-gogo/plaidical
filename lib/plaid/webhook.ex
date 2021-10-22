@@ -157,8 +157,10 @@ defmodule Plaid.Webhook do
     |> String.downcase()
   end
 
-  defp verify_claims(key, token) do
-    JWK.from_map(key)
+  defp verify_claims(%{key: key}, token) do
+    key
+    |> to_string_map()
+    |> JWK.from()
     |> JWT.verify_strict(["ES256"], token)
     |> case do
       {true, %JWT{fields: claims}, _} ->
@@ -167,5 +169,9 @@ defmodule Plaid.Webhook do
       _ ->
         {:error, :invalid_signature}
     end
+  end
+
+  defp to_string_map(map) do
+    map |> Enum.reduce(%{}, fn ({k, v}, acc) -> Map.put(acc, Atom.to_string(k), v) end)
   end
 end
